@@ -4,7 +4,6 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <math.h>
-#include <complex.h>
 #include <fftw3.h>
 
 static unsigned long long fnv1a(const void *buf, size_t n)
@@ -45,14 +44,14 @@ int main(int argc, char **argv)
 
 	FILE *f = fopen(argv[1], "wb");
 	if (!f) { perror("fopen"); return 2; }
+	static double q[2 * 1024];
 	for (int k = 0; k < N; k++) {
-		double q[2] = { round(out[k][0] * 1e6) / 1e6, round(out[k][1] * 1e6) / 1e6 };
-		fwrite(q, sizeof(double), 2, f);
+		q[2 * k]     = round(out[k][0] * 1e6) / 1e6;
+		q[2 * k + 1] = round(out[k][1] * 1e6) / 1e6;
 	}
+	fwrite(q, sizeof(double), 2 * N, f);
 	fclose(f);
-	printf("dft1024 max_rel=%.3e fnv=%016llx\n", max_rel,
-	       fnv1a(out, sizeof(double) * 2 * N));
-	printf("dft1024-q fnv=%016llx\n", 0ULL);
+	printf("dft1024 max_rel=%.3e fnv=%016llx\n", max_rel, fnv1a(q, sizeof(q)));
 
 	fftw_destroy_plan(p);
 	fftw_free(in); fftw_free(out);

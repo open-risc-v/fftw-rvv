@@ -15,6 +15,7 @@ HOST_ARG=""
 ./configure --prefix="${OUT}/prefix" ${HOST_ARG} \
   --disable-shared --enable-static --disable-fortran --disable-threads \
   --disable-openmp >/dev/null
-make -j"$(getconf _NPROCESSORS_ONLN 2>/dev/null || echo 4)" >/dev/null
-make install >/dev/null
+# 容器里没有 texinfo，doc 目标会去调 makeinfo 直接失败；把它置空（我们不要 info 手册）
+make -j"$(getconf _NPROCESSORS_ONLN 2>/dev/null || echo 4)" MAKEINFO=true >/dev/null
+make install MAKEINFO=true >/dev/null
 echo "== 上游 fftw 构建完成：${OUT}/prefix"
