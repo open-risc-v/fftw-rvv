@@ -51,7 +51,7 @@ static MPI_Comm problem_comm(const problem *p) {
 /* used to synchronize cost measurements (timing or estimation)
    across all processes for an MPI problem, which is critical to
    ensure that all processes decide to use the same MPI plans
-   (whereas serial plans need not be synchronized). */
+   (whereas serial plans need not be syncronized). */
 static double cost_hook(const problem *p, double t, cost_kind k)
 {
      MPI_Comm comm = problem_comm(p);
@@ -374,10 +374,10 @@ ptrdiff_t XM(local_size_many_transposed)(int rnk, const ptrdiff_t *n,
      local = (ptrdiff_t *) MALLOC(sizeof(ptrdiff_t) * rnk * 4, TENSORS);
 
      /* default 1d block distribution, with transposed output
-        if yblock <= n[1] */
+        if yblock < n[1] */
      dims[0].ib = xblock;
      if (rnk > 1) {
-	  if (yblock <= n[1])
+	  if (yblock < n[1])
 	       dims[1].ob = yblock;
 	  else
 	       dims[0].ob = xblock;

@@ -45,7 +45,7 @@ EXTRA_DIST=COPYRIGHT bootstrap.sh CONVENTIONS fftw.pc.in	\
 CMakeLists.txt cmake.config.h.in FFTW3Config.cmake.in		\
 FFTW3ConfigVersion.cmake.in README-perfcnt.md
 
-SIMD_LIBS = simd-support/libsimd_support.la simd-support/libsimd_sve.la
+SIMD_LIBS = simd-support/libsimd_support.la
 
 if HAVE_SSE2
 SSE2_LIBS = dft/simd/sse2/libdft_sse2_codelets.la	\
@@ -94,30 +94,6 @@ NEON_LIBS = dft/simd/neon/libdft_neon_codelets.la	\
 rdft/simd/neon/librdft_neon_codelets.la
 endif
 
-if HAVE_SVE
-SVE_LIBS = \
-dft/simd/sve128/libdft_sve128_codelets.la       \
-rdft/simd/sve128/librdft_sve128_codelets.la \
-dft/simd/sve256/libdft_sve256_codelets.la       \
-rdft/simd/sve256/librdft_sve256_codelets.la \
-dft/simd/sve512/libdft_sve512_codelets.la       \
-rdft/simd/sve512/librdft_sve512_codelets.la	\
-dft/simd/sve1024/libdft_sve1024_codelets.la       \
-rdft/simd/sve1024/librdft_sve1024_codelets.la	\
-dft/simd/sve2048/libdft_sve2048_codelets.la	\
-rdft/simd/sve2048/librdft_sve2048_codelets.la
-endif
-
-if HAVE_LSX
-LSX_LIBS = dft/simd/lsx/libdft_lsx_codelets.la \
-rdft/simd/lsx/librdft_lsx_codelets.la
-endif
-
-if HAVE_LASX
-LASX_LIBS = dft/simd/lasx/libdft_lasx_codelets.la  \
-rdft/simd/lasx/librdft_lasx_codelets.la
-endif
-
 if HAVE_GENERIC_SIMD128
 GENERIC_SIMD128_LIBS = dft/simd/generic-simd128/libdft_generic_simd128_codelets.la \
 rdft/simd/generic-simd128/librdft_generic_simd128_codelets.la
@@ -150,8 +126,7 @@ libfftw3@PREC_SUFFIX@_la_LIBADD =			\
 	api/libapi.la					\
         $(SIMD_LIBS) $(SSE2_LIBS) $(AVX_LIBS) $(AVX_128_FMA_LIBS) \
         $(AVX2_LIBS) $(ALTIVEC_LIBS) \
-        $(VSX_LIBS) $(NEON_LIBS) $(SVE_LIBS) $(KCVI_LIBS) $(AVX512_LIBS) \
-        $(LSX_LIBS) $(LASX_LIBS) \
+        $(VSX_LIBS) $(NEON_LIBS) $(KCVI_LIBS) $(AVX512_LIBS) \
         $(GENERIC_SIMD128_LIBS) $(GENERIC_SIMD256_LIBS) \
 	$(COMBINED_THREADLIBS)
 
