@@ -2,6 +2,8 @@
 # 构建上游 fftw（autotools，C）→ <out>/prefix。
 # 基线用官方发布包 fftw-3.3.10.tar.gz（sha256 56c93254…，含预生成 codelet）；
 # git 树的 codelet 要 OCaml genfft + --enable-maintainer-mode，成本高于收益，故不走 git。
+# A/B 靠 CFLAGS（-march 与 -DRVV_KERNELS）驱动：autotools 只认环境 CFLAGS，
+# 拼成 configure 参数会被吞掉（speexdsp/mpg123 踩过这个坑）。
 # 关闭 threads / fortran / shared：基线只要确定性的 double 变换，多线程会让 plan 不可复现。
 set -euo pipefail
 SRC=$1
@@ -12,6 +14,12 @@ cp -R "${SRC}" "${OUT}/src/pkg"
 cd "${OUT}/src/pkg"
 HOST_ARG=""
 [ -n "${HOST:-}" ] && HOST_ARG="--host=${HOST}"
+MARCH=${3:-rv64gc}
+KERN=${4:-0}
+export CFLAGS="-O2 -march=${MARCH}"
+if [ "${KERN}" = "1" ]; then
+  export CFLAGS="${CFLAGS} -DRVV_KERNELS=1"
+fi
 ./configure --prefix="${OUT}/prefix" ${HOST_ARG} \
   --disable-shared --enable-static --disable-fortran --disable-threads \
   --disable-openmp >/dev/null
